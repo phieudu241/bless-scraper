@@ -21,7 +21,6 @@
   },
   "homepage": "https://github.com/phieudu241/bless-scraper#readme",
   "dependencies": {
-    "asyncawait": "^1.0.6",
     "cheerio": "latest",
     "express": "latest",
     "lodash": "^4.16.4",
