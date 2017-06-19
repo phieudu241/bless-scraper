@@ -5,6 +5,7 @@ module.exports = {
 
         for (var i = 0, j = jsonArray.length; i < j; i++) {
             var item = jsonArray[i];
+            console.log(i);
 
             if (!header) {
                 var headerRow = [];
