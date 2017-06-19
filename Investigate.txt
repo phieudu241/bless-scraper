@@ -1,0 +1,51 @@
+<table cellspacing="0" cellpadding="0" class="board_ty05">
+				<tbody>
+					<tr>
+						<td class="sky">무기</td>
+					</tr>
+					<tr>
+						<td class="yellow">45레벨 이상 착용 가능</td>
+					</tr>
+					</tbody>
+			</table>
+			
+
+-- Item --
+From search result
+iGrade
+iName
+ico
+itemLv
+itemWearLv
+item_id
+
+itemCategory: 1 -> 20
+
+
+// Get from listview
+item_id
+item_name
+item_type
+item_icon
+item_level
+item_grade
+
+// Get from item detail view
+// Left panel
+item_available_for
+item_attributes
+item_blue_info
+item_red_info
+item_white_info
+item_desc
+item_gold_coin
+item_silver_coin
+item_bronze_coin
+
+// Right panel
+wearable_job
+wearable_race
+maximum_usage_count
+possible_number
+action_bar_text
+acquisition_path
