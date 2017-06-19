@@ -6,6 +6,7 @@ var requestp = require('request-promise');
 var cheerio = require('cheerio');
 var _ = require('lodash');
 var CONSTANTS = require('./constants');
+var UTILS = require('./utils');
 var app = express();
 var PROXY = '';
 //var PROXY = 'http://192.168.78.7:8888';
@@ -48,7 +49,7 @@ async function scrapeItemIds() {
 async function getItems(itemCategory, page) {
     try {
         return await requestp.post({
-            url: ITEMs_URL,
+            url: CONSTANTS.ITEMs_URL,
             proxy: PROXY,
             form: {itemCategory: itemCategory, p: page},
             json: true
