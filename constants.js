@@ -1,6 +1,7 @@
 module.exports = Object.freeze({
     // scrape config
     ITEMs_URL: "http://bless.gamemeca.com/item/getItem.php",
+    ITEM_DETAIL_URL: "http://bless.gamemeca.com/item/?item_id=",
 
     // input/ output config
     ITEMS_JSON_FILE_PATH: "./items.json",

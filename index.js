@@ -24,6 +24,11 @@ app.get('/scrapeItems', function (req, res) {
     res.send('Doing....');
 });
 
+app.get('/scrapeItemDetails', function (req, res) {
+    getItem('541211');
+    res.send('Doing....');
+});
+
 app.get('/convertToCsv', function (req, res) {
     convertJsonToCsv(CONSTANTS.ITEMS_JSON_FILE_PATH, CONSTANTS.ITEMS_CSV_FILE_PATH);
     res.send('Doing....');
@@ -91,6 +96,18 @@ async function scrapeItemIds() {
     UTILS.convertJSONArrayToCSVFile(allItems, CONSTANTS.ITEMS_CSV_FILE_PATH);
 }
 
+async function getItem(itemId) {
+    let item = {item_id: itemId},
+        html = await fetchItemWebPage(itemId);
+
+    if (html) {
+        let $ = cheerio.load(html);
+        item.item_available_for = $('.view_box_inner table:nth-of-type(1) td')[1].text().trim();
+    }
+
+    return item;
+}
+
 async function getItems(itemCategory, page) {
     try {
         return await requestp.post({
@@ -104,4 +121,17 @@ async function getItems(itemCategory, page) {
         fs.appendFileSync(CONSTANTS.LOG_FILE_PATH, 'Category:' + itemCategory + ', page:' + page + ', error:' + err);
         return {data: []};
     }
-};
+}
+
+async function fetchItemWebPage(itemId) {
+    try {
+        return await requestp.get({
+            url: CONSTANTS.ITEM_DETAIL_URL + itemId,
+            proxy: PROXY
+        });
+    } catch (err) {
+        // Write error log
+        fs.appendFileSync(CONSTANTS.LOG_FILE_PATH, 'Item ID:' + itemId + ', error:' + err);
+        return undefined;
+    }
+}
