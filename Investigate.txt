@@ -43,6 +43,8 @@ item_silver_coin
 item_bronze_coin
 
 // Right panel
+type
+level
 wearable_job
 wearable_race
 maximum_usage_count

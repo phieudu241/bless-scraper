@@ -8,8 +8,8 @@ var _ = require('lodash');
 var CONSTANTS = require('./constants');
 var UTILS = require('./utils');
 var app = express();
-//var PROXY = '';
-var PROXY = 'http://192.168.78.7:8888';
+var PROXY = '';
+//var PROXY = 'http://192.168.78.7:8888';
 
 app.set('port', (process.env.PORT || 5000));
 
@@ -25,7 +25,7 @@ app.get('/scrapeItems', function (req, res) {
 });
 
 app.get('/scrapeItemDetails', function (req, res) {
-    getItem('541211');
+    getItem('105006');
     res.send('Doing....');
 });
 
@@ -102,7 +102,46 @@ async function getItem(itemId) {
 
     if (html) {
         let $ = cheerio.load(html);
-        item.item_available_for = $('.view_box_inner table:nth-of-type(1) td')[1].text().trim();
+
+        // Left panel
+        let $leftPanel = $('.view_box_inner');
+        item.available_for = $($leftPanel.find('table:nth-of-type(1) td')[1]).text().trim();
+        item.attributes = [];
+        $leftPanel.find('table:nth-of-type(2) td').each(function (index, el) {
+            item.attributes.push($(el).text().trim());
+        });
+
+        // blue, red, white info
+        $leftPanel.find('table:nth-of-type(3) td').each(function (index, el) {
+            if (index == 0) item.blue_info = $(el).text().trim();
+            if (index == 1) item.red_info = $(el).text().trim();
+            if (index == 2) item.white_info = $(el).text().trim();
+        });
+
+        // coins
+        $leftPanel.find('.coinbox p').each(function (index, el) {
+            if (index == 0) item.gold_coin = $(el).text().trim();
+            if (index == 1) item.silver_coin = $(el).text().trim();
+            if (index == 2) item.bronze_coin = $(el).text().trim();
+        });
+
+        // Right panel
+        let $rightPanel = $('.listbox');
+        let rightProperties = [
+           'type',
+           'level',
+           'wearable_job',
+           'wearable_race',
+           'maximum_usage_count',
+           'possible_number',
+           'action_bar_text',
+           'acquisition_path'
+        ];
+
+        $rightPanel.find('table td').each(function (index, el) {
+            item[rightProperties[index]] = $(el).text().trim();
+        })
+
     }
 
     return item;

@@ -6,6 +6,7 @@ module.exports = Object.freeze({
     // input/ output config
     ITEMS_JSON_FILE_PATH: "./items.json",
     ITEMS_CSV_FILE_PATH: "./items.csv",
+    ITEMS_IDS_FILE_PATH: "./itemIds.txt",
     LOG_FILE_PATH: "./log.txt",
 
     CATEGORY_NUMBER: 20,
