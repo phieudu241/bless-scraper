@@ -1,16 +1,22 @@
 var fs = require('fs');
 module.exports = {
-    convertJSONArrayToCSVFile: function (jsonArray, csvFilePath) {
+    convertJSONArrayToCSVFile: function (jsonArray, csvFilePath, headers) {
         var header = false;
+        var headerRow = [];
 
         for (var i = 0, j = jsonArray.length; i < j; i++) {
             var item = jsonArray[i];
             console.log(i);
 
             if (!header) {
-                var headerRow = [];
-                for (var property in item) {
-                    headerRow.push(property);
+                if (headers) {
+                    // use defined headers
+                    headerRow = headers;
+                } else {
+                    // get header from item props
+                    for (var property in item) {
+                        headerRow.push(property);
+                    }
                 }
 
                 // Mark file as UTF8-BOM
@@ -22,7 +28,8 @@ module.exports = {
             }
 
             var dataRow = [];
-            for (var property in item) {
+            for (var index in headerRow) {
+                let property = headerRow[index];
                 if (item[property] instanceof Array) {
                     dataRow.push('"' + item[property].join(',') + '"');
                 } else if (item[property] instanceof Object) {
@@ -57,7 +64,12 @@ module.exports = {
 
         items[itemId] = item;
 
-        fs.writeFileSync(outputFilePath, JSON.stringify(items));
+        this.writeJSONToFile(items, outputFilePath);
+        //fs.writeFileSync(outputFilePath, JSON.stringify(items));
+    },
+
+    writeJSONToFile: function (jsonObject, outputFilePath) {
+        fs.writeFileSync(outputFilePath, JSON.stringify(jsonObject));
     },
 
     getIdsFromFile: function (filePath) {

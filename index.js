@@ -29,6 +29,11 @@ app.get('/scrapeItemDetails', function (req, res) {
     res.send('Doing....');
 });
 
+app.get('/merge', function (req, res) {
+    mergeItemAndDetails(CONSTANTS.ITEMS_JSON_FILE_PATH, CONSTANTS.ITEM_DETAILS_JSON_FILE_PATH);
+    res.send('Doing....');
+});
+
 app.get('/convertToCsv', function (req, res) {
     convertJsonToCsv(CONSTANTS.ITEMS_JSON_FILE_PATH, CONSTANTS.ITEMS_CSV_FILE_PATH);
     res.send('Doing....');
@@ -43,8 +48,33 @@ function convertJsonToCsv(jsonFilePath, csvFilePath) {
     var jsonItems = [];
     if (itemsStr != undefined && itemsStr.trim() != '') {
         jsonItems = JSON.parse(itemsStr);
-        UTILS.convertJSONArrayToCSVFile(jsonItems, csvFilePath);
+        let headers = ['item_id', 'ico', 'iGrade', 'iName', 'itemLv', 'itemWearLv', 'iCategory', 'available_for', 'attributes', 'blue_info', 'red_info', 'white_info', 'gold_coin', 'silver_coin', 'bronze_coin', 'type', 'level', 'wearable_job', 'wearable_race', 'maximum_usage_count', 'possible_number', 'action_bar_text', 'acquisition_path'];
+        UTILS.convertJSONArrayToCSVFile(jsonItems, csvFilePath, headers);
     }
+
+    console.log('Finished!');
+}
+
+function mergeItemAndDetails(itemJsonFilePath, itemDetailsJsonFilePath) {
+    let itemsStr = fs.readFileSync(itemJsonFilePath).toString();
+    let itemDetailsStr = fs.readFileSync(itemDetailsJsonFilePath).toString();
+    let jsonItems = JSON.parse(itemsStr);
+    let jsonDetails = JSON.parse(itemDetailsStr);
+
+    jsonItems.forEach(function (item) {
+        let itemDetail = jsonDetails[item.item_id];
+        if (itemDetail) {
+            // Copy all props of item detail to item
+            for (var prop in itemDetail) {
+                item[prop] = itemDetail[prop];
+            }
+        } else {
+            console.log(item.item_id + ': Item not found');
+        }
+    });
+
+    // Save full info items
+    UTILS.writeJSONToFile(jsonItems, itemJsonFilePath);
 
     console.log('Finished!');
 }
