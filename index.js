@@ -25,7 +25,7 @@ app.get('/scrapeItems', function (req, res) {
 });
 
 app.get('/scrapeItemDetails', function (req, res) {
-    getItem('105006');
+    scrapeItemDetails();
     res.send('Doing....');
 });
 
@@ -96,11 +96,12 @@ async function scrapeItemIds() {
     UTILS.convertJSONArrayToCSVFile(allItems, CONSTANTS.ITEMS_CSV_FILE_PATH);
 }
 
-async function getItem(itemId) {
-    let item = {item_id: itemId},
+async function getItem(itemId, index) {
+    let item = undefined,
         html = await fetchItemWebPage(itemId);
 
     if (html) {
+        item = {item_id: itemId};
         let $ = cheerio.load(html);
 
         // Left panel
@@ -140,8 +141,7 @@ async function getItem(itemId) {
 
         $rightPanel.find('table td').each(function (index, el) {
             item[rightProperties[index]] = $(el).text().trim();
-        })
-
+        });
     }
 
     return item;
@@ -172,5 +172,24 @@ async function fetchItemWebPage(itemId) {
         // Write error log
         fs.appendFileSync(CONSTANTS.LOG_FILE_PATH, 'Item ID:' + itemId + ', error:' + err);
         return undefined;
+    }
+}
+
+async function scrapeItemDetails() {
+    let itemIds = UTILS.getIdsFromFile(CONSTANTS.ITEMS_IDS_FILE_PATH);
+
+    for (var index = 0; index < itemIds.length; index++) {
+        let itemId = itemIds[index];
+        let item = await getItem(itemId, index);
+
+        // write item to JSON file
+        if (item) {
+            UTILS.writeJSON(itemId, item, CONSTANTS.ITEM_DETAILS_JSON_FILE_PATH);
+            UTILS.writeLog(CONSTANTS.ITEM_DETAILS_LOG_FILE_PATH, itemId + ': OK');
+            console.log('OK: ' + itemId);
+        } else {
+            UTILS.writeLog(CONSTANTS.ITEM_DETAILS_LOG_FILE_PATH, itemId + ': Error');
+            console.log('Error: ' + itemId);
+        }
     }
 }

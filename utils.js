@@ -42,5 +42,30 @@ module.exports = {
 
             fs.appendFileSync(csvFilePath, dataRow.join(',') + "\r\n");
         }
+    },
+
+    writeJSON: function (itemId, item, outputFilePath) {
+        // Create json file if it doesn't exist
+        fs.appendFileSync(outputFilePath, '');
+
+        let itemsStr = fs.readFileSync(outputFilePath).toString();
+        let items = {};
+
+        if (itemsStr != undefined && itemsStr.trim() != '') {
+            items = JSON.parse(itemsStr);
+        }
+
+        items[itemId] = item;
+
+        fs.writeFileSync(outputFilePath, JSON.stringify(items));
+    },
+
+    getIdsFromFile: function (filePath) {
+        var ids = fs.readFileSync(filePath).toString().split('\r\n');
+        return ids;
+    },
+    
+    writeLog: function (logFilePath, content) {
+        fs.appendFileSync(logFilePath, content + "\r\n");
     }
 };
